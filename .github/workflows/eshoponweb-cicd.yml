@@ -1,7 +1,7 @@
 name: eShopOnWeb Build and Test
 
 #Triggers (uncomment line below to use it)
-#on: [push, workflow_dispatch]
+on: [push, workflow_dispatch]
 
 #Environment variables https://docs.github.com/en/actions/learn-github-actions/environment-variables
 env:
@@ -39,55 +39,55 @@ jobs:
         name: .net-app
         path: ${{env.DOTNET_ROOT}}/myapp
         
-    # upload the bicep template as artifacts for next job
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
-      with:
-        name: bicep-template
-        path: ${{ env.TEMPLATE-FILE }}
+    # # upload the bicep template as artifacts for next job
+    # - name: Upload artifact for deployment job
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: bicep-template
+    #     path: ${{ env.TEMPLATE-FILE }}
         
-  # Use Bicep to deploy infrastructure + Publish webapp 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: buildandtest
-    environment:
-      name: 'Development'
-    steps:
+  # # Use Bicep to deploy infrastructure + Publish webapp 
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: buildandtest
+  #   environment:
+  #     name: 'Development'
+  #   steps:
     
-    #Download the publish files created in previous job
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v3
-      with:
-        name: .net-app
-        path: .net-app
+    # #Download the publish files created in previous job
+    # - name: Download artifact from build job
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: .net-app
+    #     path: .net-app
   
-    #Download the bicep templates from previous job
-    - name: Download artifact from build job
-      uses: actions/download-artifact@v3
-      with:
-        name: bicep-template
-        path: bicep-template
+    # #Download the bicep templates from previous job
+    # - name: Download artifact from build job
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: bicep-template
+    #     path: bicep-template
         
-   #Login in your azure subscription using a service principal (credentials stored as GitHub Secret in repo)
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #  #Login in your azure subscription using a service principal (credentials stored as GitHub Secret in repo)
+  #   - name: Azure Login
+  #     uses: azure/login@v1
+  #     with:
+  #       creds: ${{ secrets.AZURE_CREDENTIALS }}
            
-    # Deploy Azure WebApp using Bicep file
-    - name: deploy
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: ${{ env.SUBSCRIPTION-ID }}
-        resourceGroupName: ${{ env.RESOURCE-GROUP }}
-        template: bicep-template/webapp.bicep
-        parameters: 'webAppName=${{ env.WEBAPP-NAME }} location=${{ env.LOCATION }}'
-        failOnStdErr: false   
+    # # Deploy Azure WebApp using Bicep file
+    # - name: deploy
+    #   uses: azure/arm-deploy@v1
+    #   with:
+    #     subscriptionId: ${{ env.SUBSCRIPTION-ID }}
+    #     resourceGroupName: ${{ env.RESOURCE-GROUP }}
+    #     template: bicep-template/webapp.bicep
+    #     parameters: 'webAppName=${{ env.WEBAPP-NAME }} location=${{ env.LOCATION }}'
+    #     failOnStdErr: false   
     
-    # Publish website to Azure App Service (WebApp)
-    - name: Publish Website to WebApp
-      uses: Azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.WEBAPP-NAME  }}
-        package: .net-app
+    # # Publish website to Azure App Service (WebApp)
+    # - name: Publish Website to WebApp
+    #   uses: Azure/webapps-deploy@v2
+    #   with:
+    #     app-name: ${{ env.WEBAPP-NAME  }}
+    #     package: .net-app
    
