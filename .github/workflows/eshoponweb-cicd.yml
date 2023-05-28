@@ -69,6 +69,7 @@ jobs:
         path: bicep-template
 
     # But don't actually do anything else - just checking deployment works
+    # Test comment
         
   #  #Login in your azure subscription using a service principal (credentials stored as GitHub Secret in repo)
   #   - name: Azure Login
